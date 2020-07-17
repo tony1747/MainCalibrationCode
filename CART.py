@@ -25,23 +25,44 @@ replicates = 1
 cutoff = 2
 
 
+T_0=100
+E_0=100
+a=0.3953
+b=1.0/6
+p=0.4862
+m=0.0223
+n=2.785
+d=0.0598
+g=14.0247
+
+b=b/T_0
+p=p*T_0
+m=m/T_0
+n=n/E_0
+g=T_0*g
+
+
+
 # varFactor is birth + death for all cell types in all drugs:
 # try for K=1, 2, 3
-d = 0.0598
-a = 0.3953
-b = 1.33e-5
-p = 0.4862
-m = 1.784e-6
+# try smaller k_2
+
+#d = 0.0598
+#a = 0.3953
+#b = 1.33e-5
+#p = 0.4862
+#m = 1.784e-6
 k_n1 = 0
-k_2 = 1
-k_3 = 8.8577e-4*k_2  #k_3/k_2=8.8577e-4
-g = 1.7531e5
+k_2 = 2.786e-8
+k_3 = m/n*k_2  #k_3/k_2=m/n
+#g = 1.7531e5
 s = 0
 k_1 = m*(k_2+k_3+k_n1)/k_3 # try a K that makes sense
 d_1 = d
+print(k_1)
 
 # try for T_initial=10^7 or 8, E_initial = 2*10^7 or any reasonable number
-relativePopInit = [2500, 2500*5];
+relativePopInit = [E_0, T_0];
 
 # Check for negative rates:
 for parameter in [a, b, d, p, k_1, k_n1, k_2, k_3]:
@@ -140,7 +161,9 @@ print(life_history)
 print(k_1)
 def column(matrix, i):
     return [row[i] for row in matrix]
-plt.plot(column(life_history,3),column(life_history,0),'b',column(life_history,1),'r',column(life_history,2),'g')
+plt.plot(column(life_history,3),column(life_history,0),'b')
+plt.plot(column(life_history,3),column(life_history,1),'r')
+plt.plot(column(life_history,3),column(life_history,2),'g')
 plt.show()
 def ode_system(t, z):
     E, T, C=z
@@ -149,8 +172,24 @@ def ode_system(t, z):
             k_1*E*T-(k_n1+k_2+k_3)*C,
             ]
 
-sol=solve_ivp(ode_system, [1,100],[2500,5*2500,0])
-plt.plot(sol.t, sol.y[0],'b', sol.t, sol.y[1],'r', sol.t, sol.y[2],'g')
+sol=solve_ivp(ode_system, [0,2],[E_0,T_0,0])
+plt.plot(sol.t, sol.y[0],'b')
+plt.plot(sol.t, sol.y[1],'r')
+plt.plot(sol.t, sol.y[2],'g')
+plt.show()
+def ode_system1(t, z): #This is the ODE system for 1-binding
+    E, T, C=z
+    return [p*T*E/(g+T)-d_1*E-(k_1*k_3)/(k_n1+k_2+k_3)*E*T, #check the value of s
+            a*T*(1-b*T)-(k_1*k_2)/(k_n1+k_2+k_3)*E*T,
+            0
+            #k_1*E*T-(k_n1+k_2+k_3)*C,
+            ]
+
+#code the Kuz model for one-binding case. Use equation (4) and (5).
+sol=solve_ivp(ode_system1, [0,2],[E_0,T_0,0])
+plt.plot(sol.t, sol.y[0],'b')
+plt.plot(sol.t, sol.y[1],'r')
+plt.plot(sol.t, sol.y[2],'g')
          # consider not use log
 plt.show()
 #sol=odeint(ode_system, [1e6,1e6,0],[1,100])
