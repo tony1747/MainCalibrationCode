@@ -1,15 +1,20 @@
 %% code to read excel files 
 
-% cancerdata = xlsread( 'Run1_HT1080.xlsx', 'Sheet1' ); 
+% INPUT: receptor = L,M,H,VH, CARTnum = 0,5,10,20 
+
+%cancerdata = xlsread( 'Run1_HT1080.xlsx', 'Sheet1' ); 
 cancerdata = xlsread( 'Run8_PBT138.xlsx', 'Sheet1' ); 
 
 
 % Time in first column (in sec) 
 time = cancerdata(:,1); 
-time = time/3600 /24; 
+time = time/3600 /24;
+ind = find(time>1.75,1);
+time = time(ind:end);
+
 
 cancerdata  = cancerdata(:,2:end); 
-
+cancerdata = cancerdata(ind:end,:);
 % Last cancer data is often negative. Scale that to non-negative number... 
 for n = 1:size(cancerdata, 2) 
     if(cancerdata(end,n)<0)
@@ -17,10 +22,32 @@ for n = 1:size(cancerdata, 2)
     end 
 end
 
-% Select time > 1.75 day part of data 
-tind = find( time > 1.25, 1 ); 
-time = time(tind:end); 
-cancerdata = cancerdata(tind:end, :); 
+
+
+% 1 = L / 2 = M / 3 = H / 4 = VH 
+receptorind = [1,1,1, 2,2,2, 3,3,3, 4,4,4 ];
+receptorind = repmat(receptorind,1,4);
+
+if( strcmp( receptor, 'L' ) )
+    rind = 1; 
+elseif( strcmp( receptor, 'M' ) )
+    rind = 2; 
+elseif( strcmp( receptor, 'H' ) )
+    rind = 3; 
+elseif( strcmp( receptor, 'VH' ) )
+    rind = 4;
+else
+    disp('receptor not valid' ) 
+end 
+
+cartinit= [repmat(0,1,12),repmat(5,1,12),repmat(10,1,12),repmat(20,1,12)]; %,repmat(20,1,12),repmat(10,1,12),repmat(5,1,12),repmat(0,1,12)]; %#ok<REPMAT>
+
+
+% choose data column, receptor = L,M,H,VH, CARTnum = 0,5,10,20 
+cancercol = intersect( find( receptorind==rind ), find( cartinit == CARTnum ) ); 
+
+selected_cancerdata = cancerdata(:, cancercol); 
+%selected_cartdata = 
 
 
 

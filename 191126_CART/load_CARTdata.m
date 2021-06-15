@@ -9,6 +9,8 @@ switch(receptorDensity)
         ctype = 2; 
     case 'H'
         ctype = 3; 
+    case 'VH'
+        ctype = 4;
 end
 
 ind = intersect( find(dataCANCERnum == ctype), find(dataCARTnum == nCART0) ); 

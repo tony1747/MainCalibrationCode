@@ -1,6 +1,14 @@
-read_CARTdata()
-for n_cell=26:26 %check the index
+
+
+for receptor = ['L', 'M', 'H', 'VH']
+  for CARTnum = [5, 10, 20]
+    read_CARTdata() %% <- change the last part, data to cancerdata <- maybe you can also make something to select the cancer cell type outside. 
+    CARTratio=1/CARTnum;
+    for n = 1:3
+      data = selected_cancerdata(:,n); 
+      InteractionCalibration_slow(); 
+    end
     
-data=cancerdata(:,n_cell);
-SecondaryCalibrationCode()
-end
+    %% here save parameters/posterior 
+  end
+end 

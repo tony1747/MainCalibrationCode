@@ -1,6 +1,9 @@
 function dx = tumor_cart(t, x, param)
-%param={a,b,n,s,p,g,m,d}
-E=x(1);
-T=x(2);
-dx(1,1)=param(4)*E*T/(param(5)+T)-param(6)*E*T-param(7)*E;
-dx(2,1)=param(1)*T*(1-param(2)*T)-param(3)*E*T;
+global a b d %n d p g m
+%param={k_1,alpha(=k_n1+k_3),beta(=k_n1+k_2),gamma(=k_n1+k_3+k_2),p,g}
+E=x(2);
+T=x(1);
+I=x(3);
+dx(2,1)=param(5)*E*T/(param(6)+T)-param(1)*E*T-d*E+param(2)*I;
+dx(1,1)=a*T*(1-b*T)-param(1)*E*T+param(3)*I;
+dx(3,1)=param(1)*E*T-param(4)*I;
