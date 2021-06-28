@@ -2,8 +2,8 @@
 
 % INPUT: receptor = L,M,H,VH, CARTnum = 0,5,10,20 
 
-%cancerdata = xlsread( 'Run1_HT1080.xlsx', 'Sheet1' ); 
-cancerdata = xlsread( 'Run8_PBT138.xlsx', 'Sheet1' ); 
+cancerdata = xlsread( 'Run1_HT1080.xlsx', 'Sheet1' ); 
+%cancerdata = xlsread( 'Run8_PBT138.xlsx', 'Sheet1' ); 
 
 
 % Time in first column (in sec) 
@@ -15,6 +15,9 @@ time = time(ind:end);
 
 cancerdata  = cancerdata(:,2:end); 
 cancerdata = cancerdata(ind:end,:);
+ind = find(time>80/24,1);
+time = time(1:ind);
+cancerdata = cancerdata(1:ind,:);
 % Last cancer data is often negative. Scale that to non-negative number... 
 for n = 1:size(cancerdata, 2) 
     if(cancerdata(end,n)<0)

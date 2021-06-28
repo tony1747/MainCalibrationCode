@@ -16,7 +16,7 @@ global b %n d p g m
 %a = 0.1105; 
 %b = 4.2e-9; 
 
-b = 1/6; 
+b = 1/6.6817;  %b=1/6 for PBT138
 
 %% define parameters to estimate 
  params = {
