@@ -16,12 +16,12 @@ global b %n d p g m
 %a = 0.1105; 
 %b = 4.2e-9; 
 
-b = 1/6.6817;  %b=1/6 for PBT138
+%b = 1/6.6817;  %b=1/6 for PBT138
 
 %% define parameters to estimate 
  params = {
     {'a', 0.4105,       0,     4} 
-%     {'b', 0.3, 0.1, 10}% ParamName, starting value, uniform prior bounds     
+    {'b', 1/6.6817, 0.1, 10}% ParamName, starting value, uniform prior bounds     
    % {'p', 0.2,          0.1,       0.4}  
     %{'m', 3*0.1^10,   3*0.1^11,  3*0.1^9}
     %{'n', 1*0.1^7,      0.1^8,     0.1^6}
@@ -78,12 +78,12 @@ function SS = LLHfunc(params,fitData)
 [t,tumVol] = ode23(@(t,y)tumor_only(t,y,params), fitData.xdata, fitData.ydata(1,:)' );
 
 %% Choose 'Sum of squares' 
-% SS = sum((tumVol(:,1) - fitData.ydata(:,1)).^2);
+ SS = sum((tumVol(:,1) - fitData.ydata(:,1)).^2);
 
 %% Choose Gaussian noise of sigma variance 
 nsig = 0.1;  %%%% nsig*100 percent noise 
 sigma =  fitData.ydata(:,1) * nsig; 
-SS = -sum(log((1./(sqrt(2*pi)*sigma)).*exp(-((tumVol(:,1) - fitData.ydata(:,1)).^2)./(2*sigma.^2))));
+%SS = -sum(log((1./(sqrt(2*pi)*sigma)).*exp(-((tumVol(:,1) - fitData.ydata(:,1)).^2)./(2*sigma.^2))));
 
 
 end
