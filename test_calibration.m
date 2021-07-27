@@ -1,7 +1,17 @@
-read_CARTdata()
-for n_cell=16:18 %check the index
-    %for HT1080, the index should be 12
-    %for PBT138, the index should be 9
-data=cancerdata(:,n_cell);
-InteractionCalibration2()
-end
+
+
+for receptor = ['L', 'M', 'H', 'VH']
+  for CARTnum = [5, 10, 20]
+    read_CARTdata() %% <- change  last part, data to cancerdata <- maybe you can also make something to select the cancer cell type outside. 
+    CARTratio=1/CARTnum;
+    for n = 1:3
+      data = selected_cancerdata(:,n);
+      if receptor=='M'
+          data=data*3;
+      end
+      InteractionCalibration_fast(); 
+    end
+    
+    %% here save parameters/posterior 
+  end
+end 

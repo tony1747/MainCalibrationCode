@@ -1,3 +1,4 @@
+
 clear all 
 
 addpath( './DRAM_Code/'); 
@@ -16,6 +17,7 @@ global a b %n d p g m
 a = 0.1105; 
 b = 4.2e-9; 
 
+   
 %% define parameters to estimate 
  params = {
 %     {'a', 0.1105,       0.1,     0.431} % ParamName, starting value, uniform prior bounds     

@@ -6,7 +6,7 @@ addpath( './DRAM_Code/');
 % read_CARTdata; 
 CancerType = 'L'; 
 global CARTratio
-CARTratio = 0.05; 
+CARTratio = 0.2; 
 
 [time, data] = load_CARTdata( CancerType, CARTratio ); 
 
@@ -21,16 +21,16 @@ global a b %n d p g m
  params = {
    % {'a', 0.4105,       0.168,     4} 
   %  {'b', 0.3, 0.1, 10}% ParamName, starting value, uniform prior bounds     
-    {'p', 0.4862,      0,       1.0}  
+    {'p', 0.4862,      0,       5}  
     %{'m', 0.1,     0,       0.5}
     %{'n', 1 ,     0,        5}
-    {'d', 0.0598,     0,       0.06}
+    {'d', 0.0598,     0,       0.1}
     {'g', 14.0247,      1,   20}
-    {'alpha', 10, 1, 20}
-    {'beta', 0.001, 0, 1}
-    {'gamma', 0.0223, 0, 0.5}
-    {'delta', 0.001, 0, 5}
-    {'epsilon', 2.785, 0, 5 }
+    {'alpha', 2, 1, 20}
+    {'beta', 0.025, 0, 1}
+    {'gamma', 0.001, 0, 0.5}
+    {'delta', 1, 0, 5}
+    {'epsilon', 27.85, 0, 60}
     };
     
 
@@ -67,16 +67,16 @@ if( norm( params - mean(chain) )/norm( mean(chain) ) > 0.1 );
 end 
 
 plottime = fitData.xdata; 
-plottime = [0:.1:30]; 
+%plottime = [0:.1:30]; 
 
-[t,modFit] = ode23(@(t,y)tumor_cart_only(t,y,params), plottime, [fitData.ydata(1,1)*CARTratio,fitData.ydata(1,1)]');
+[t,modFit] = ode23(@(t,y)two_binding(t,y,params), plottime, [fitData.ydata(1,1)*CARTratio,fitData.ydata(1,1)]');
 
 
 figure; hold on; 
 plot(plottime,modFit(:,1),'--b','LineWidth',1)
 plot(plottime,modFit(:,2),'-r','LineWidth',1)
 plot(fitData.xdata,fitData.ydata(:,1),'ok','MarkerSize',6,'MarkerFaceColor','k')
-
+error=norm(modFit-fitData.ydata(:,1));
 xlabel('Time','FontSize',14)
 ylabel('Tumor Size','FontSize',14)
 set(gca,'FontSize',14)
@@ -90,9 +90,9 @@ global CARTratio
 % SS = sum((tumVol(:,1) - fitData.ydata(:,1)).^2);
 
 %% Choose Gaussian noise of sigma variance 
-nsig = 0.1;  %%%% nsig*100 percent noise 
-sigma =  fitData.ydata(:,1) * nsig; 
-SS = -sum(log((1./(sqrt(2*pi)*sigma)).*exp(-((tumVol(:,2) - fitData.ydata(:,1)).^2)./(2*sigma.^2))));
+%nsig = 0.1;  %%%% nsig*100 percent noise 
+%sigma =  fitData.ydata(:,1) * nsig; 
+SS = norm((tumVol(:,2) - fitData.ydata(:,1)));
 
 
 end
