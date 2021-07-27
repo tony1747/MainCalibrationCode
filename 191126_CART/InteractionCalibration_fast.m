@@ -24,13 +24,13 @@ fitData.ydata(1,2) = data(1)*CARTratio;
 global a b d %n p g m
 [a,b] = set_CancerGrowthParams( receptor ); 
 d=0.0412;
-
+%compare medium 1:5 1:10, high 1:10
 %% define parameters to estimate 
  params = {
    % {'a', 0.4105,       0.168,     4} 
   %  {'b', 0.3, 0.1, 10}% ParamName, starting value, uniform prior bounds     
-    {'p', 0.4,      0,       3}  
-    {'m', 0.1,     0,       0.5}
+    {'p', 0.4,      0,       20}  
+    {'m', 0.1,     0,       10}
     {'n', 1 ,     0,        10}
     %{'d', 0.02,     0,       0.5}
     {'g', 2,      1,   20}
@@ -53,12 +53,10 @@ options.nsimu = 10000; %number of samples for DRAM
 % figure; mcmcplot(chain,[],results,'chainpanel');
 
 %%%%% plot to check pair of chain relation  
-figure(300); mcmcplot(chain,[],results,'pairs');
+figure; mcmcplot(chain,[],results,'pairs');
 
 %%%%% plot this to check pair of chain distribution 
-if( length( unique(chain(:)) ) > 4 )  %this number is dependent on the number of parameters we want to calibrate
-    figure(301); mcmcplot(chain,[],results,'denspanel');
-end
+%figure; mcmcplot(chain,[],results,'denspanel');
 
 %% Compare data to calibrated model
 ind = find(ss2chain == min(ss2chain));
@@ -79,15 +77,26 @@ plottime = fitData.xdata;
 
 figure;  hold on;
 plot(plottime,modFit(:,1),'--r','LineWidth',1)
-plot(plottime,modFit(:,2),'-b','LineWidth',1)
+%plot(plottime,modFit(:,2)+modFit(:,3),'-b','LineWidth',1)
+%plot(plottime,modFit(:,3),'
 plot(fitData.xdata,fitData.ydata(:,1),'ok','MarkerSize',6,'MarkerFaceColor','k')
-legend({'Cancer','CAR-T','data'})
-
+legend({'Cancer','data'})
 xlabel('Time','FontSize',14)
 ylabel('Tumor Size','FontSize',14)
 set(gca,'FontSize',14)
+fast_1_binding=strcat('Fast_1_binding(Cancer only)',receptor,int2str(CARTnum),'_',int2str(n),'.jpg');
+saveas(gcf,fast_1_binding)
+
+
+plot(plottime,modFit(:,2),'-b','LineWidth',1)
+%plot(plottime,modFit(:,3),'
+%plot(fitData.xdata,fitData.ydata(:,1),'ok','MarkerSize',6,'MarkerFaceColor','k')
+legend({'Cancer','CAR-T','data'})
+
+set(gca,'FontSize',14)
 fast_1_binding=strcat('Fast_1_binding',receptor,int2str(CARTnum),'_',int2str(n),'.jpg');
 saveas(gcf,fast_1_binding)
+
 close all
 %fi
 function SS = LLHfunc(params,fitData)

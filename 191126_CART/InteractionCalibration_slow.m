@@ -25,11 +25,12 @@ d=0.0412;
     
     %{'b', 0.3, 0.1, 10}% ParamName, starting value, uniform prior bounds     
     %{'p', 0.2,          0.1,       0.4}  
-    {'k_1',0.3,0,10}
-    {'alpha',0.3,0,10} %alpha=k_n1+k_3
-    {'beta',0.3,0,10}  %beta=k_n1+k_2
-    {'gamma',2.5,2,10}  %gamma=k_n1+k_2+k_3
-    {'p', 0.4, 0, 3}
+    {'k_1',0.3,0,15}
+    {'k_2',0.3,0,10}
+    {'k_3',0.3,0,15} %alpha=k_n1+k_3
+    {'k_n1',0.01,0,1}  %beta=k_n1+k_2
+    %{'k_n1',0.1,0,1}  %gamma=k_n1+k_2+k_3
+    {'p', 0.4, 0, 20}
     %{'m', 3*0.1^10,   3*0.1^11,  3*0.1^9}
     %{'m', 0, 0, 0.1^14}
     %{'n', 1*0.1^7,      0.1^8,     0.1^6}
@@ -37,13 +38,13 @@ d=0.0412;
     %{'d', 0.02,         0.02,       0.06}
     %{'d', 0, 0, 0.1^14}
     %{'g', 2*0.1^7,    2*0.1^8,   2*0.1^6}
-    {'g', 1, 0, 10}
+    {'g', 2, 1, 20}
     };
 
 %% This is the likelihood function 
 model.ssfun = @LLHfunc; 
 % SSQfunc
-options.nsimu = 2*10^4; %number of samples for DRAM
+options.nsimu = 10000; %number of samples for DRAM
 
 %% Run mcmc 
 [results, chain, s2chain, ss2chain] = mcmcrun(model,fitData,params,options);
@@ -59,7 +60,7 @@ options.nsimu = 2*10^4; %number of samples for DRAM
 figure; mcmcplot(chain,[],results,'pairs');
 
 %%%%% plot this to check pair of chain distribution 
-figure; mcmcplot(chain,[],results,'denspanel');
+%figure; mcmcplot(chain,[],results,'denspanel');
 
 %% Compare data to calibrated model
 ind = find(ss2chain == min(ss2chain));
@@ -81,16 +82,27 @@ plottime = fitData.xdata;
 
 figure;hold on;
 plot(plottime,modFit(:,1)+modFit(:,3),'--r','LineWidth',1)
-plot(plottime,modFit(:,2)+modFit(:,3),'-b','LineWidth',1)
+%plot(plottime,modFit(:,2)+modFit(:,3),'-b','LineWidth',1)
 %plot(plottime,modFit(:,3),'
 plot(fitData.xdata,fitData.ydata(:,1),'ok','MarkerSize',6,'MarkerFaceColor','k')
-legend({'Cancer','CAR-T','data'})
-
+legend({'Cancer','data'})
 xlabel('Time','FontSize',14)
 ylabel('Tumor Size','FontSize',14)
 set(gca,'FontSize',14)
+slow_1_binding=strcat('Slow_1_binding(Cancer only)',receptor,int2str(CARTnum),'_',int2str(n),'.jpg');
+saveas(gcf,slow_1_binding)
+
+
+plot(plottime,modFit(:,2)+modFit(:,3),'-b','LineWidth',1)
+%plot(plottime,modFit(:,3),'
+%plot(fitData.xdata,fitData.ydata(:,1),'ok','MarkerSize',6,'MarkerFaceColor','k')
+legend({'Cancer','CAR-T','data'})
+
+set(gca,'FontSize',14)
 slow_1_binding=strcat('Slow_1_binding',receptor,int2str(CARTnum),'_',int2str(n),'.jpg');
 saveas(gcf,slow_1_binding)
+
+
 close all
 
 function SS = LLHfunc(params,fitData)
@@ -123,3 +135,21 @@ end
 b = 1/6; 
 
 end 
+
+function [a,b]=set_CancerGrowthParamsHT( CancerType )
+
+switch (CancerType )
+    case 'L'
+        a=2.6136;
+        b=0.1660;
+    case 'M'
+        a=2.1991;
+        b=0.2861;
+    case 'H'
+        a=2.3474;
+        b=0.3247;
+    case 'VH'
+        a=1.8704;
+        b=0.4702;
+end
+end
