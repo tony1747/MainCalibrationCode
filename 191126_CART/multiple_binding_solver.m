@@ -26,19 +26,20 @@ n=str2double(choice(end));  %read_CARTdata provides 3 sets of data with same den
 data=selected_cancerdata(n);
 x(1)=data(1);
 x(2)=data(1)*CARTratio;
-x(3:5)=0; %3:5 for three-binding; 3:6 for four-binding ...
-[t,tumVol] = ode23(@(t,y)three_binding_slow(t,y,params), time, x, params );%change the ODE for different bindings
+x(3:3)=0; %3:5 for three-binding; 3:6 for four-binding ...
+[t,tumVol] = ode23(@(t,y)tumor_cart(t,y,params), time, x, params );%change the ODE for different bindings
+t=t-t(1);
 figure;hold on;
 plot(t,tumVol(:,1),'-r')
 plot(t,tumVol(:,2),'-b')
-for i=3:5 %same as above, 3:5 for three-binding, 3:6 for four-binding...
+for i=3:3 %same as above, 3:5 for three-binding, 3:6 for four-binding...
     plot(t,tumVol(:,i),'y')
 end
 xlabel('Time','FontSize',14)
 ylabel('Tumor Size','FontSize',14)
 set(gca,'FontSize',14)
-legend('Cancer','CAR-T','Conjugate1','Conjugate2','Conjugate3')
-n_binding=strcat('3_binding_slow(with conjugates)',receptor,int2str(CARTnum),'_',int2str(n),'.jpg');
+legend('Cancer','CAR-T','Conjugate1')
+n_binding=strcat('1_binding_slow(with conjugates)',receptor,int2str(CARTnum),'_',int2str(n),'.jpg');
 saveas(gcf,n_binding)
 hold off;
 plot(t,tumVol(:,1),'-r', t,tumVol(:,2),'-b')
@@ -46,7 +47,7 @@ xlabel('Time','FontSize',14)
 ylabel('Tumor Size','FontSize',14)
 set(gca,'FontSize',14)
 legend('Cancer','CAR-T')
-n_binding=strcat('3_binding_slow(without conjugates)',receptor,int2str(CARTnum),'_',int2str(n),'.jpg');
+n_binding=strcat('1_binding_slow(without conjugates)',receptor,int2str(CARTnum),'_',int2str(n),'.jpg');
 saveas(gcf,n_binding)
 close all
 end
