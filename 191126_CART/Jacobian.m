@@ -1,0 +1,11 @@
+function Jacobian=Jacobian(a,b,p,g,d,k,alpha,beta,gamma,C,T)
+%params={p,g,k_1,k_2,k_3,k_n1
+Jacobian(1,1)=p*C/(g+C)-d-k*C;
+Jacobian(1,2)=p*g*T/(g+C)^2-k*T;
+Jacobian(1,3)=alpha;
+Jacobian(2,1)=-k*C;
+Jacobian(2,2)=a-2*a*b*C-k*T;
+Jacobian(2,3)=beta;
+Jacobian(3,1)=k*C;
+Jacobian(3,2)=k*T;
+Jacobian(3,3)=gamma;
